@@ -6,6 +6,7 @@ var UNCHANGED    = '#093';
 var ALL          = '#000';
 
 jQuery(document).ready(function(J) {
+
   J('table.main .status img[title]').tipsy({gravity: 's'});
 
   J('button.drop, a.drop').click( function(e) {
@@ -89,7 +90,7 @@ jQuery(document).ready(function(J) {
     var pending_data_label = J.map(pending_data, function(item, index){return item+" pending"});
     var failed_data_label = J.map(failed_data, function(item, index){return item+" failed"});
 
-    new Grafico.StackedBarGraph($(id),
+    graph = new Grafico.StackedBarGraph($(id),
       {
         unchanged: unchanged_data,
         changed: changed_data,
@@ -111,7 +112,22 @@ jQuery(document).ready(function(J) {
     );
 
     J(this).hide();
+
+    J(window).resize(function(){
+      //get the container's width
+
+      J(id).parent().css('border', '1px solid red');
+      w = J(id).parent().width();
+      h = J(id).height();
+
+      //resize the graph's width
+      graph.paper.setSize(w, h);
+
+      //redraw the graph
+
+    });
   });
+
   init_expandable_list();
 
   J('.reports_show_action #report-tabs').show();
