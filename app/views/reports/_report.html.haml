@@ -8,15 +8,19 @@
       %li= link_to 'Delete', report, :confirm => 'Are you sure?', :method => :delete, :class => "delete button"
 
 .item
+  - count_by_status = report.resource_statuses.count(:group => 'status')
   - user_facing = Hash.new { |hash, key| hash[key] = key[/[a-z].*/i].titleize }
-  - user_facing.update '800_resource_statuses' => 'Events'
+  - user_facing_id = user_facing.dup
+  - %w[failed pending changed unchanged].each_with_index do |stat, i|
+    - user_facing_id[stat] = user_facing[stat]
+    - user_facing.update "#{800 + i}_#{stat}" => "#{stat.titleize} (#{count_by_status[stat] || 0})"
   - panels = []
   %ul#report-tabs.tabbed
     - Registry.each_callback :core, :report_view_widgets do |name, widget|
       - panels << capture_haml do
-        %div.panel(id="#{user_facing[name].downcase}")
+        %div.panel(id="#{user_facing_id[name].downcase}")
           = widget.call self, report
-      %li(id="#{user_facing[name].downcase}-tab")
+      %li(id="#{user_facing_id[name].downcase}-tab")
         %a= user_facing[name]
   = panels
 

@@ -4,25 +4,8 @@ var PENDING      = '#e72';
 var CHANGED      = '#069';
 var UNCHANGED    = '#093';
 var ALL          = '#000';
-var BAR_GRAPH    = '';
-
-
-//graph specific variables
-var graph_id             = [];
-var label_data           = [];
-var changed_data         = []; 
-var unchanged_data       = []; 
-var pending_data         = [];
-var failed_data          = []; 
-
-var changed_data_label   = [];
-var unchanged_data_label = [];
-var pending_data_label   = []; 
-var failed_data_label    = [];
-
 
 jQuery(document).ready(function(J) {
-
   J('table.main .status img[title]').tipsy({gravity: 's'});
 
   J('button.drop, a.drop').click( function(e) {
@@ -56,81 +39,62 @@ jQuery(document).ready(function(J) {
   J.fn.mapHtmlInt = function() { return this.map(function(){return parseInt(J(this).html())}).get(); }
   J.fn.mapHtmlFloat = function() { return this.map(function(){return parseFloat(J(this).html())}).get(); }
 
-  //build the stacked bar graph
-  init_stacked_graph(J);
+  J("table.data.runtime").each(function(i){
+    var id = "table_runtime"+i;
+    J("<div id='"+id+"' style='height:150px; width: auto'></div>").insertAfter(J(this));
 
-  init_expandable_list();
+    var label_data = J(this).find("tr.labels th").mapHtml();
+    var runtime_data = J(this).find("tr.runtimes td").mapHtmlFloat();
 
-  J('.reports_show_action #report-tabs').show();
-  J('.reports_show_action .panel').addClass('tabbed');
-  J('.reports_show_action #report-tabs li').click(function() {
-    panelID = this.id.replace(/-tab$/, '');
-    J('.reports_show_action #report-tabs li').removeClass('active');
-    J('.reports_show_action .panel').hide();
-    J(this).addClass('active');
-    J('#' + panelID).show();
-  });
-  J('.reports_show_action #report-tabs li:first').click();
+    new Grafico.LineGraph($(id),
+      {
+        runtimes: runtime_data
+      },
+      {
+        colors: { runtimes: "#009" },
+        font_size: 9,
+        grid: false,
+        label_color: '#666',
+        labels: label_data,
+        label_rotation: -30,
+        markers: "value",
+        meanline: true,
+        padding_top: 10,
+        left_padding: 50,
+        // show_horizontal_labels: false,
+        show_ticks: false,
+        start_at_zero: false,
+        stroke_width: 3,
+        vertical_label_unit: "s"
+      }
+    );
 
-  J('.pages_home_action #home-tabs').show();
-  J('.pages_home_action .panel').addClass('tabbed');
-  J('.pages_home_action #home-tabs li').click(function() {
-    panelID = this.id.replace(/-tab$/, '');
-    J('.pages_home_action #home-tabs li').removeClass('active');
-    J('.pages_home_action .panel').hide();
-    J(this).addClass('active');
-    J('#' + panelID).show();
-  });
-  J('.pages_home_action #home-tabs li:first').click();
-
-  init_sidebar_links();
-});
-
-function init_stacked_graph(J) {
-  
-  console.log('init_stacked_graph');
-
-  J("table.data.status").each(function(i){
-
-    console.log('the for each happens how many times?');
-    graph_id = "table_status"+i;
-    J("<div id='"+graph_id+"' style='height: 150px; width: auto;'></div>").insertAfter(J(this));
-
-    label_data = J(this).find("tr.labels th").mapHtml();
-    changed_data = J(this).find("tr.changed td").mapHtmlInt();
-    unchanged_data = J(this).find("tr.unchanged td").mapHtmlInt();
-
-    pending_data = J(this).find("tr.pending td").mapHtmlInt();
-    failed_data = J(this).find("tr.failed td").mapHtmlInt();
-
-
-    changed_data_label = J.map(changed_data, function(item, index){return item+" changed"});
-    unchanged_data_label = J.map(unchanged_data, function(item, index){return item+" unchanged"});
-    pending_data_label = J.map(pending_data, function(item, index){return item+" pending"});
-    failed_data_label = J.map(failed_data, function(item, index){return item+" failed"});
-
-    //build the graph
-    create_stacked_graph($(graph_id), label_data, changed_data_label, unchanged_data_label, pending_data_label, failed_data_label);
-    
     J(this).hide();
   });
-}
 
-function create_stacked_graph(id, label_data, changed_data_label, unchanged_data_label, pending_data_label, failed_data_label) {
-  
-  console.log('--------------------------')
 
-  console.log('GRAPH - yay the unchanged data is >> ' + [unchanged_data]);
-  console.log('GRAPH - BEFORE the changed_data data is >> ' + [changed_data]);
-  console.log('GRAPH - BEFORE the pending_data data is >> ' + [pending_data]);
-  console.log('GRAPH - BEFORE the failed_data data is >> ' + [failed_data]);
 
-  BAR_GRAPH = new Grafico.StackedBarGraph(id,
+  J("table.data.status").each(function(i){
+    var id = "table_status"+i;
+    J("<div id='"+id+"' style='height: 150px; width: auto;'></div>").insertAfter(J(this));
+
+    var label_data = J(this).find("tr.labels th").mapHtml();
+    var changed_data = J(this).find("tr.changed td").mapHtmlInt();
+    var unchanged_data = J(this).find("tr.unchanged td").mapHtmlInt();
+    var pending_data = J(this).find("tr.pending td").mapHtmlInt();
+    var failed_data = J(this).find("tr.failed td").mapHtmlInt();
+
+    var changed_data_label = J.map(changed_data, function(item, index){return item+" changed"});
+    var unchanged_data_label = J.map(unchanged_data, function(item, index){return item+" unchanged"});
+    var pending_data_label = J.map(pending_data, function(item, index){return item+" pending"});
+    var failed_data_label = J.map(failed_data, function(item, index){return item+" failed"});
+
+    new Grafico.StackedBarGraph($(id),
       {
-        unchanged: jQuery('table.data.status').find("tr.unchanged td").mapHtmlInt(),
-        changed: jQuery('table.data.status').find("tr.changed td").mapHtmlInt(),
-        pending: jQuery('table.data.status').find("tr.pending td").mapHtmlInt(),
-        failed: jQuery('table.data.status').find("tr.failed td").mapHtmlInt()
+        unchanged: unchanged_data,
+        changed: changed_data,
+        pending: pending_data,
+        failed: failed_data
       },
       {
         colors: { pending: PENDING, changed: CHANGED, unchanged: UNCHANGED, failed: FAILED },
@@ -146,13 +110,36 @@ function create_stacked_graph(id, label_data, changed_data_label, unchanged_data
       }
     );
 
-    console.log('--------------------------')
+    J(this).hide();
+  });
+  init_expandable_list();
 
-    console.log('GRAPH - AFTER the unchanged data is >> ' + jQuery('table.data.status').find("tr.unchanged td").mapHtmlInt());
-    console.log('GRAPH - AFTER the changed_data data is >> ' + [changed_data]);
-    console.log('GRAPH - AFTER the pending_data data is >> ' + [pending_data]);
-    console.log('GRAPH - AFTER the failed_data data is >> ' + [failed_data]);
-} 
+  J('.reports_show_action #report-tabs').show();
+  J('.reports_show_action .panel').addClass('tabbed');
+  J('.reports_show_action #report-tabs li').click(function() {
+    console.log('this is being clicked');
+    panelID = this.id.replace(/-tab$/, '');
+    J('.reports_show_action #report-tabs li').removeClass('active');
+    J('.reports_show_action .panel').hide();
+    J(this).addClass('active');
+    J('#' + panelID).show();
+  });
+  J('.reports_show_action #report-tabs li:first').click();
+
+  J('.pages_home_action #home-tabs').show();
+  J('.pages_home_action .panel').addClass('tabbed');
+  
+  J('.pages_home_action #home-tabs li').click(function() {
+    panelID = this.id.replace(/-tab$/, '');
+    J('.pages_home_action #home-tabs li').removeClass('active');
+    J('.pages_home_action .panel').hide();
+    J(this).addClass('active');
+    J('#' + panelID).show();
+  });
+  J('.pages_home_action #home-tabs li:first').click();
+
+  init_sidebar_links();
+});
 
 function init_expandable_list() {
   jQuery( '.expand-all' ).live( 'click', function() {
@@ -178,9 +165,8 @@ function toggle_expandable_link() {
     if (jQuery('.expandable-link').not('.collapsed-link').size() == 0) {
       var old_text = jQuery('.collapse-all').text();
       jQuery('.collapse-all')
-        .removeClass( 'collapse-all' )
-        .addClass( 'expand-all' )
-        .text( old_text.replace( 'collapse', 'expand' ));
+        .removeClass( 'collapse-all' ).addClass( 'expand-all' )
+        .text('Expand all');
     }
   } else {
     if (jQuery('.expandable-link.collapsed-link').size() == 0) {
@@ -188,7 +174,7 @@ function toggle_expandable_link() {
       jQuery('.expand-all')
         .removeClass( 'expand-all' )
         .addClass( 'collapse-all' )
-        .text( old_text.replace( 'expand', 'collapse' ));
+        .text('Collapse all');
     }
   }
 }
@@ -215,18 +201,3 @@ function init_sidebar_links() {
       });
   });
 }
-
-jQuery(window).resize(function(){
-
-  //resize and redraw the graphs based on the window's updated dimensions
-
-  //BAR_GRAPH.paper.remove();
-
-  //this is working, but needs help
-  //BAR_GRAPH.paper.canvas["setAttribute"]("viewBox", "0 0 500 500"); 
-
-  console.log('--------------------------')
-
-  //create_stacked_graph($(graph_id), label_data, changed_data_label, unchanged_data_label, pending_data_label, failed_data_label);
-
-});

@@ -277,7 +277,7 @@ body {
     padding: 1em;
     margin-bottom: 1em; }
     body .item:last-child {
-      padding-bottom: 0;
+      padding-bottom: .1em;
       margin-bottom: 0; }
   body .half {
     width: 45%;

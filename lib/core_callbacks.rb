@@ -36,10 +36,16 @@ Registry.add_callback :core, :node_view_widgets, "700_activity" do |view_rendere
 end
 
 # Report view widgets
-Registry.add_callback :core, :report_view_widgets, "800_resource_statuses" do |view_renderer, report|
-  statuses = report.resource_statuses.all(:order => 'resource_type, title').group_by(&:status)
-  statuses = %w[failed pending changed unchanged].map { |k| (v = statuses[k]) && [k, v] }
-  view_renderer.render 'reports/resource_statuses', :report => report, :statuses => statuses.compact
+%w[failed pending changed unchanged].each_with_index do |stat,i|
+  Registry.add_callback :core, :report_view_widgets, "#{800 + i}_#{stat}" do |view_renderer, report|
+    statuses = report.resource_statuses.all(:order => 'resource_type, title').group_by(&:status)
+    view_renderer.render(
+      'reports/resource_statuses',
+      :report => report,
+      :status => stat,
+      :resources => statuses[stat] || []
+    )
+  end
 end
 
 Registry.add_callback :core, :report_view_widgets, "700_log" do |view_renderer, report|
