@@ -1,15 +1,15 @@
 .section
-  - if report.resource_statuses.present?
+  - if resources.present?
     - index = 0
     .section
       %dl.expandable-list
-        %h3 #{status.titleize} (#{resources.count})
         %h4
           %a{ :href => '#', :class => 'expand-all' } Expand all
         - resources.each do |status|
           - index += 1
+          - status_events = status.events.all
           %dt{:class => cycle( 'odd', 'even' )}
-            - if status.events.empty?
+            - if status_events.empty?
               %span{:class => 'non-expandable-bullet'}= status.name
             - else
               = link_to h(status.name), {}, {:class => 'expandable-link collapsed-link', :id => "expand-#{index}"}
@@ -20,11 +20,10 @@
               %tr
                 %th Property
                 %th Message
-              - status.events.each do |event|
+              - status_events.each do |event|
                 %tr{:class => "status #{event.status}"}
                   %td= event.property
                   %td= popup_md5s( h(event.message), :exclude_md5s => [event.desired_value])
         %br
   - else
-    %h3 Events
     %p= describe_no_matches_for(:events, :report)

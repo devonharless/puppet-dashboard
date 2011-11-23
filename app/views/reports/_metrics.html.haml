@@ -1,5 +1,4 @@
 .section
-  %h3 Metrics
   - if report.metrics.present?
     - report.metrics.group_by(&:category).sort.each do |category, metrics_in_category|
       .section

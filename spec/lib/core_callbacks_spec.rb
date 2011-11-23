@@ -6,20 +6,9 @@ describe 'core' do
   end
 
   describe 'report_view_widgets' do
-    describe '800_resource_statuses' do
-      it "should move 'failed' resource_statuses to the start" do
-        callback = @registry_hash[:core][:report_view_widgets]['800_resource_statuses']
-        report = Report.create_from_yaml(File.read(File.join(Rails.root, 'spec/fixtures/reports/puppet26/report_error_on_package_service_and_files.yaml')))
-
-        statuses = nil
-        mock_renderer = stub('view_renderer')
-        mock_renderer.expects(:render).with do |name, args|
-          statuses = args[:statuses]
-        end
-
-        callback.call(mock_renderer, report)
-
-        statuses.map(&:first).should == ['failed', 'unchanged']
+    %w{failed pending changed unchanged}.each_with_index do |stat, i|
+      it "should have an #{800 + i}_#{stat} callback" do
+        @registry_hash[:core][:report_view_widgets]["#{800 + i}_#{stat}"].should be
       end
     end
   end

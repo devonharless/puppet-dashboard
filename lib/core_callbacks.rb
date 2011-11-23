@@ -38,12 +38,12 @@ end
 # Report view widgets
 %w[failed pending changed unchanged].each_with_index do |stat,i|
   Registry.add_callback :core, :report_view_widgets, "#{800 + i}_#{stat}" do |view_renderer, report|
-    statuses = report.resource_statuses.all(:order => 'resource_type, title').group_by(&:status)
+    resource_statuses = report.resource_statuses.where(:status => stat).all(:order => 'resource_type, title')
     view_renderer.render(
       'reports/resource_statuses',
       :report => report,
       :status => stat,
-      :resources => statuses[stat] || []
+      :resources => resource_statuses || []
     )
   end
 end
