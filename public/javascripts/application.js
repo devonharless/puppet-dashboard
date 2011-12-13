@@ -1,5 +1,5 @@
 var UNRESPONSIVE = '#888';
-var FAILED       = '#c21';
+var FAILED       = '#C21';
 var PENDING      = '#e72';
 var CHANGED      = '#069';
 var UNCHANGED    = '#093';
@@ -39,7 +39,7 @@ jQuery(document).ready(function(J) {
   J.fn.mapHtmlInt = function() { return this.map(function(){return parseInt(J(this).html())}).get(); }
   J.fn.mapHtmlFloat = function() { return this.map(function(){return parseFloat(J(this).html())}).get(); }
 
-  J("table.data.runtime").each(function(i){
+  /*J("table.data.runtime").each(function(i){
     var id = "table_runtime"+i;
     J("<div id='"+id+"' style='height:150px; width: auto'></div>").insertAfter(J(this));
 
@@ -70,56 +70,45 @@ jQuery(document).ready(function(J) {
     );
 
     J(this).hide();
-  });
-
-  //J("table.data.status > tbody > tr > td:nth-child(1)").css("background","#ccc");
+  });*/ //not currently using this graph, Grafico is disabled in application.html.haml
 
   J("table.data.status").each(function(i){
-    var id = "table_status"+i;
+    var id = "table_status" + i;
 
-    //clickColumn
-    //c.eachColumn (add a click event)
-   // J("<div id='"+id+"' style='height: 150px; width: auto;'></div>").insertAfter(J(this));
-
-    J("<canvas id='"+id+"' width='500' height='auto'>[No canvas support]</canvas>").insertAfter(J(this));
+    // J("<div id='"+id+"' style='height: 150px; width: auto;'></div>").insertAfter(J(this));
+    
+    var bar_width = J(this).parent().width();
+    
+    J("<canvas id='"+id+"' width='"+bar_width+"' height='auto'>[No canvas support]</canvas>").insertAfter(J(this));
 
     var label_data = J(this).find("tr.labels th").mapHtml();
-    var changed_data = J(this).find("tr.changed td").mapHtmlInt();
     var unchanged_data = J(this).find("tr.unchanged td").mapHtmlInt();
+    var changed_data = J(this).find("tr.changed td").mapHtmlInt();
     var pending_data = J(this).find("tr.pending td").mapHtmlInt();
     var failed_data = J(this).find("tr.failed td").mapHtmlInt();
 
-    var changed_data_label = J.map(changed_data, function(item, index){return item+" changed"});
     var unchanged_data_label = J.map(unchanged_data, function(item, index){return item+" unchanged"});
+    var changed_data_label = J.map(changed_data, function(item, index){return item+" changed"});
     var pending_data_label = J.map(pending_data, function(item, index){return item+" pending"});
     var failed_data_label = J.map(failed_data, function(item, index){return item+" failed"});
 
-    var data = [unchanged_data, changed_data, pending_data, failed_data];
-    var bar = new RGraph.Bar(id, [unchanged_data, [20], [10], [5], [1], [5], [10], [20]]);
-    bar.Set('chart.colors', [PENDING, CHANGED, UNCHANGED, FAILED]);
-    bar.Set('chart.gutter.bottom', 50);
+    //build the data array for the bar graph
+    var bar_data = [];
+    for(var i; i < label_data.length; i++) {
+      bar_data.push([]);
+      bar_data[i].push(unchanged_data[i], changed_data[i], pending_data[i], failed_data[i]);
+    }
+
+    var bar = new RGraph.Bar(id, bar_data);
+    bar.Set('chart.colors', [UNCHANGED, CHANGED, PENDING, FAILED]);
     bar.Set('chart.background.grid', false);
     bar.Set('chart.grouping', 'stacked');
     bar.Set('chart.labels', label_data);
     bar.Set('chart.text.size', '8');
     bar.Set('chart.text.color', '#666');
-    bar.Set('chart.text.angle', '90');
-    bar.Set('chart.labels.above', true);
     bar.Set('chart.tooltips.event', 'onmousemove');
-    if (!RGraph.isOld()) {
-        tooltipFunc = function (i)
-        {
-            var r = i % 4;
-            
-            if (r == 3) return 'John'
-            else if (r == 2) return 'Rich';
-            else if (r == 1) return 'Jane';
-            else if (r == 0) return 'Quentin';
-        }
-        bar.Set('chart.tooltips', tooltipFunc);
-    }
+    
     bar.Draw();
-
 
     /*bar_graph = new Grafico.StackedBarGraph($(id),
       {
@@ -144,12 +133,10 @@ jQuery(document).ready(function(J) {
 
     bar_graph.background.node.onlick = function(){
       console.log('testing this shizzle now');
-    }
+    }*/
 
-    J(this).hide();*/
+    J(this).hide();
   });
-
-
 
   init_expandable_list();
 

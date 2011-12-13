@@ -13,7 +13,7 @@
 
     = stylesheet_link_tag 'reset', 'layout', 'forms', 'tables', 'jquery.ui.custom', 'jquery.ui.combobox', 'typography', 'links', 'token-input-facebook', 'tipsy', 'application', 'colorbox', 'help', :cache => 'all'
     /*= javascript_include_tag 'prototype', 'jquery-ui.min', 'jquery.tokeninput', 'excanvas.min', 'raphael-min', 'grafico.min', 'jquery.form', 'jquery.placeholders', 'jquery.ui.combobox', 'jquery.colorbox.js', 'jquery.tipsy', 'search', 'application', :cache => 'all'*/
-    = javascript_include_tag 'prototype', 'jquery-ui.min', 'jquery.tokeninput', 'excanvas.min', 'RGraph.common.core', 'RGraph.bar', 'RGraph.common.tooltips', 'RGraph.common.effects', 'RGraph.common.key', 'raphael-min', 'grafico.min', 'jquery.form', 'jquery.placeholders', 'jquery.ui.combobox', 'jquery.colorbox.js', 'jquery.tipsy', 'search', 'application', :cache => 'all'
+    = javascript_include_tag 'jquery-ui.min', 'jquery.tokeninput', 'excanvas.min', 'RGraph.common.core', 'RGraph.bar', 'RGraph.common.tooltips', 'RGraph.common.effects', 'RGraph.common.key', 'raphael-min', 'jquery.form', 'jquery.placeholders', 'jquery.ui.combobox', 'jquery.colorbox.js', 'jquery.tipsy', 'search', 'application', :cache => 'all'
     - Registry.each_callback :core, :head_extensions do |widget|
       = widget.call self
 
