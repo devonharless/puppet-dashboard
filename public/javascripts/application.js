@@ -72,11 +72,16 @@ jQuery(document).ready(function(J) {
     J(this).hide();
   });
 
-
+  //J("table.data.status > tbody > tr > td:nth-child(1)").css("background","#ccc");
 
   J("table.data.status").each(function(i){
     var id = "table_status"+i;
-    J("<div id='"+id+"' style='height: 150px; width: auto;'></div>").insertAfter(J(this));
+
+    //clickColumn
+    //c.eachColumn (add a click event)
+   // J("<div id='"+id+"' style='height: 150px; width: auto;'></div>").insertAfter(J(this));
+
+    J("<canvas id='"+id+"' width='500' height='auto'>[No canvas support]</canvas>").insertAfter(J(this));
 
     var label_data = J(this).find("tr.labels th").mapHtml();
     var changed_data = J(this).find("tr.changed td").mapHtmlInt();
@@ -89,7 +94,34 @@ jQuery(document).ready(function(J) {
     var pending_data_label = J.map(pending_data, function(item, index){return item+" pending"});
     var failed_data_label = J.map(failed_data, function(item, index){return item+" failed"});
 
-    new Grafico.StackedBarGraph($(id),
+    var data = [unchanged_data, changed_data, pending_data, failed_data];
+    var bar = new RGraph.Bar(id, [unchanged_data, [20], [10], [5], [1], [5], [10], [20]]);
+    bar.Set('chart.colors', [PENDING, CHANGED, UNCHANGED, FAILED]);
+    bar.Set('chart.gutter.bottom', 50);
+    bar.Set('chart.background.grid', false);
+    bar.Set('chart.grouping', 'stacked');
+    bar.Set('chart.labels', label_data);
+    bar.Set('chart.text.size', '8');
+    bar.Set('chart.text.color', '#666');
+    bar.Set('chart.text.angle', '90');
+    bar.Set('chart.labels.above', true);
+    bar.Set('chart.tooltips.event', 'onmousemove');
+    if (!RGraph.isOld()) {
+        tooltipFunc = function (i)
+        {
+            var r = i % 4;
+            
+            if (r == 3) return 'John'
+            else if (r == 2) return 'Rich';
+            else if (r == 1) return 'Jane';
+            else if (r == 0) return 'Quentin';
+        }
+        bar.Set('chart.tooltips', tooltipFunc);
+    }
+    bar.Draw();
+
+
+    /*bar_graph = new Grafico.StackedBarGraph($(id),
       {
         unchanged: unchanged_data,
         changed: changed_data,
@@ -110,8 +142,15 @@ jQuery(document).ready(function(J) {
       }
     );
 
-    J(this).hide();
+    bar_graph.background.node.onlick = function(){
+      console.log('testing this shizzle now');
+    }
+
+    J(this).hide();*/
   });
+
+
+
   init_expandable_list();
 
   J('.reports_show_action #report-tabs').show();
